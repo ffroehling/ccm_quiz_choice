@@ -28,7 +28,6 @@
               {tag : "img", id : 'question_img', inner : ""},
               {tag : "h3", id : 'question_text', inner : ""},
               { tag : 'div', id : "answers", inner : [] },
-              //{ tag : 'button', id : "submit", inner :  'test'} //TODO: Make sth with placeholder here, etc.*/
           ]
         }
       }
@@ -58,56 +57,39 @@
        * init is called once after all dependencies are solved and is then deleted
        */
       this.init = async () => {
+        // set shortcut to help functions
+        $ = self.ccm.helper;
         this.traverse_light_dom();
       };
   
       this.traverse_light_dom = () => {
-        [ ...self.inner.children ].forEach( question_tag => {
+        /*
+         * #################
+         * THE SOURCE CODE IN THIS AREA IS BASED AND ALMOST EQUIVALENT 
+         * TO André Kless' quiz component
+         * https://akless.github.io/ccm-components/quiz/ccm.quiz.js
+         * #################
+         */  
+        
+        let answers = [];
 
-          // no question tag? => skip
-          if ( question_tag.tagName !== 'CCM-QUIZ-QUESTION' ) {
-              return;
-          }
-
-          /**
-           * question data (generated out of question tag)
-           * @type {Object}
-           */
-          const question = $.generateConfig( question_tag );
-
-          /**
-           * answer data sets (generated out of question tag)
-           * @type {Object[]}
-           */
-          question.answers = [];
-
-          // iterate over all children of question tag to search for answer tags
-          [ ...question.inner.children ].forEach( answer_tag => {
-
+        [ ...self.inner.children ].forEach( answer_tag => {
             // no answer tag? => skip
-            if ( answer_tag.tagName !== 'ANSWER' ) return;
+            if ( answer_tag.tagName !== 'CCM-CHOICE-ANSWER' ) return;
 
             /**
              * answer data (generated out of answer tag)
              * @type {Object}
              */
             const answer = $.generateConfig( answer_tag );
-
-            // remove no more needed properties in answer data
-            delete answer.inner;
-
-            // add answer data to answer data sets
-            question.answers.push( answer );
+            answers.push(answer);
 
           } );
 
-          // remove no more needed properties in question data
-          delete question.inner;
-
           // add question data to question data sets
-          question.answers.length > 0 && questions.push( question );
-        });
-
+          if(answers.length > 0){
+            this.answers = answers;
+          }
       } ;
 
 
@@ -115,85 +97,7 @@
        * is called once after the initialization and is then deleted
        */
       this.ready = async () => {
-        // set shortcut to help functions
-        $ = self.ccm.helper;
       };
-
-      //curry the click function to access the answer
-      /*this.oncheck = function(answer){
-        return function(event){
-          event.stopPropagation();
-          event.preventDefault();
-
-          var given = this.checked;
-
-          //answer is reference to array element, so we can safely do this
-          answer.given = given;
-        }
-      };*/
-
-      /*this.submit = function(event){
-          event.stopPropagation();
-          event.preventDefault();
-
-          var perc_part = Math.ceil(100 / self.answers.length);
-          var perc = 0;
-    
-          for(var i = 0; i < self.answers.length; i++){
-            var correct = (self.answers[i].given || false) == self.answers[i].correct;
-
-            if(correct){
-              perc += perc_part; 
-            }
-          }
-
-          //Due to roundings it's possible to get a number > 100 -> fix this
-          perc = perc > 100 ? 100 : perc;
-
-          //TODO: Perc is the result percentage. Give it back if possible or do further processing
-      }*/
-
-      /*this.render = function(){
-        const main = self.html.main;
-        const question = main.inner[0];
-        const answers= main.inner[1];
-
-        //build answer array
-        for(var i = 0; i < this.answers.length; i++){
-          //random id for linking label and checkbox
-          var id = Math.random() * (100000 - 9999999) + 100000;
-
-
-          var cb = { 
-            tag :'input', 
-            type : 'checkbox', 
-            id : id,
-            class : 'answer_cb', 
-            onchange : this.oncheck(this.answers[i]), 
-          };
-
-          var label = {
-            tag : 'label',
-            for : id,
-            class : 'answer_label',
-            inner : this.answers[i].value
-          }
-
-          answers.inner.push(cb);
-          answers.inner.push(label);
-        }
-
-        //show question if required
-        if(this.show_question){
-          question.inner = this.question;    
-        }
-        else{
-          //remove element
-          main.inner.splice(0, 1);
-        }
-
-        $.setContent(self.element, $.html(main));
-      }*/
 
       this.set_given_answer = (answer) => {
         this.given_answer = answer;
@@ -214,7 +118,6 @@
               else{
                 wrapper.classList.add('wrong');
               }
-
             }
 
           });
@@ -266,6 +169,10 @@
           this.percentage = answer.correct ? 100 : 0;
           this.given_answer = answer;
           this.on_answer_callback();
+        
+          if(this.show_feedback){
+            this.show_correct_answer();
+          }
         };
       }
 
@@ -293,7 +200,9 @@
         this.given_answer = this.answers;
         this.on_answer_callback();
 
-        this.show_correct_answer();
+          if(this.show_feedback){
+            this.show_correct_answer();
+          }
       }
 
       this.get_answer_div = () => {
@@ -395,6 +304,23 @@
         $.setContent(self.element, html);
       };
 
+      this.unify_config = async () => {
+        if(this.answers.length == 0){
+          alert('No answers given');
+          return false;
+        }
+
+        if(!(this.type == 'single' || this.type == 'multiple')){
+          this.type = 'single';
+        }
+
+
+        if( typeof this.show_feedback === 'undefined'){
+          this.show_feedback = true;
+        }
+
+        return true;
+      }
 
       /**
        * starts the instance
@@ -402,8 +328,12 @@
       this.start = async () => {
         //self.html.main.inner[2].onclick = this.submit;
         //this.render();
+        if(!this.unify_config()){
+          return;
+        }
 
         this.show_question();
+        
       };
 
     }

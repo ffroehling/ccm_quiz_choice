@@ -66,4 +66,12 @@
   cursor : pointer;
 }
 
+#question_img {
+  width: 40%;
+  display : block;
+  margin-left : auto;
+  margin-right : auto;
+  margin-bottom: 15pt;
+  margin-top: 15pt;
+}
 
