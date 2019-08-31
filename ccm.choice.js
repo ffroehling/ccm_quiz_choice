@@ -147,6 +147,11 @@
       };
 
       this.show_correct_answer  = () => {
+        this.disabled_submit = true; 
+        this.element.querySelectorAll('button').forEach((button)  => {
+          button.classList.add('disabled');
+        });
+
         if(this.type == 'single'){
           this.show_single_correct_answer();
         }
@@ -166,6 +171,10 @@
           event.stopPropagation();
           event.preventDefault();
 
+          if(this.disabled_submit){
+            return;
+          }
+
           this.percentage = answer.correct ? 100 : 0;
           this.given_answer = answer;
           this.on_answer_callback();
@@ -179,6 +188,10 @@
       this.handle_multiple_answer = () => {
         let percentage = 0;
         let perc_answer = Math.floor(100 / this.answers.length);
+
+        if(this.disabled_submit){
+          return;
+        }
 
         this.answers.forEach(answer => {
           if(answer.selected == answer.correct){
@@ -313,7 +326,6 @@
         if(!(this.type == 'single' || this.type == 'multiple')){
           this.type = 'single';
         }
-
 
         if( typeof this.show_feedback === 'undefined'){
           this.show_feedback = true;

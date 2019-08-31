@@ -36,14 +36,20 @@
   cursor : pointer;
 }
 
+.disabled {
+  background : lightgray !important;
+  color : black !important;
+}
 .wrong {
   background : red !important;
+  color : white !important;
 }
 
 .correct {
   background : green !important;
   color : white !important;
 }
+
 
 .multiple_wrapper {
   margin-left : 30pt;
