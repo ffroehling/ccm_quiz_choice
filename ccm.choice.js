@@ -58,22 +58,15 @@
        * init is called once after all dependencies are solved and is then deleted
        */
       this.init = async () => {
-        //this.traverse_light_dom();
+        this.traverse_light_dom();
       };
   
       this.traverse_light_dom = () => {
         [ ...self.inner.children ].forEach( question_tag => {
-          console.log(question_tag);
-          console.log(question_tag.tagName);
 
           // no question tag? => skip
-          if ( question_tag.tagName !== 'QUESTION' ) {
-              console.log('it is no question');
+          if ( question_tag.tagName !== 'CCM-QUIZ-QUESTION' ) {
               return;
-          }
-          else{
-            console.log('it is a question');
-            return;
           }
 
           /**
@@ -202,19 +195,83 @@
         $.setContent(self.element, $.html(main));
       }*/
 
-      this.handle_single_answer = (percentage) => {
+      this.set_given_answer = (answer) => {
+        this.given_answer = answer;
+      };
+
+      this.show_multiple_correct_answer = () => {
+        this.given_answer.forEach((given_answer) => {
+          //get correctness
+          let correct = given_answer.selected == given_answer.correct;
+
+          //get according answer
+          this.element.querySelectorAll('.multiple_wrapper').forEach(wrapper => {
+            let content = wrapper.querySelector('label').innerHTML;
+            if(content == given_answer.value){
+              if(correct){
+                wrapper.classList.add('correct');
+              }
+              else{
+                wrapper.classList.add('wrong');
+              }
+
+            }
+
+          });
+        });
+      };
+
+      this.show_single_correct_answer = () => {
+        //get correct answer
+        this.correct_answer = null;
+        this.answers.forEach(answer => {
+          if(answer.correct){
+            this.correct_answer = answer;
+          }
+        });
+
+        this.element.querySelectorAll('button').forEach((button) => {
+          if(this.given_answer.value == button.innerHTML){
+            if(!this.given_answer.correct){
+              button.classList.add('wrong');
+            }
+          }
+         
+          if(this.correct_answer.value == button.innerHTML){
+            button.classList.add('correct');
+          }
+        });
+      };
+
+      this.show_correct_answer  = () => {
+        if(this.type == 'single'){
+          this.show_single_correct_answer();
+        }
+        else{
+          this.show_multiple_correct_answer();
+        }
+      };
+
+      this.on_answer_callback = () => {
+        if(this.answer_callback){
+          this.answer_callback(this.percentage, this.given_answer);
+        }
+      }
+
+      this.handle_single_answer = (answer) => {
         return (event) => {
           event.stopPropagation();
           event.preventDefault();
-          
-          alert(percentage);
+
+          this.percentage = answer.correct ? 100 : 0;
+          this.given_answer = answer;
+          this.on_answer_callback();
         };
       }
 
       this.handle_multiple_answer = () => {
         let percentage = 0;
         let perc_answer = Math.floor(100 / this.answers.length);
-        console.log(this.answers);
 
         this.answers.forEach(answer => {
           if(answer.selected == answer.correct){
@@ -231,6 +288,12 @@
         else if(percentage > 100){
           percentage = 100;
         }
+
+        this.percentage = percentage;
+        this.given_answer = this.answers;
+        this.on_answer_callback();
+
+        this.show_correct_answer();
       }
 
       this.get_answer_div = () => {
@@ -241,9 +304,10 @@
         this.answers.forEach(answer => {
           let button = {
             tag : 'button',
+            correct : answer.correct,
             class : 'single_answer',
             inner : answer.value,
-            onclick : this.handle_single_answer(answer.correct ? 100 : 0).bind(this)
+            onclick : this.handle_single_answer(answer).bind(this)
           };
 
           this.get_answer_div().push(button);
@@ -296,8 +360,7 @@
           onclick : this.handle_multiple_answer.bind(this)
         }
 
-        this.html.main.inner.push(submit);
-        console.log(this.answers);
+        this.get_answer_div().push(submit);
       },
 
       this.set_question = () => {

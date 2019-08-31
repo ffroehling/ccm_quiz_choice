@@ -1,5 +1,6 @@
 ccm.files[ 'config.multiple.js' ] = {
   "local" : {
+    "css" : ['ccm.load', './style.css'],
     "type" : "multiple" ,
     "question_text" : "Welche Antworten sind korrekt?",
     "answers": [

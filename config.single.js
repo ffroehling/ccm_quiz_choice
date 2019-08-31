@@ -1,5 +1,6 @@
 ccm.files[ 'config.single.js' ] = {
   "local" : {
+    "css" : ['ccm.load', './style.css'],
     "type" : "single" ,
     "question_text" : "Welche Antwort ist korrekt?",
 //    "question_image" : "<SOME URL HERE>"
