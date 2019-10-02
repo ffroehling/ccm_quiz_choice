@@ -70,6 +70,11 @@
          * https://akless.github.io/ccm-components/quiz/ccm.quiz.js
          * #################
          */  
+
+        //if there's no lightdom we can just skip
+        if(!self.inner){
+          return;
+        }
         
         let answers = [];
 
@@ -338,8 +343,6 @@
        * starts the instance
        */
       this.start = async () => {
-        //self.html.main.inner[2].onclick = this.submit;
-        //this.render();
         if(!this.unify_config()){
           return;
         }
