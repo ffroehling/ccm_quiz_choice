@@ -127,7 +127,7 @@
 
       /**
        * show_correct_answer renders the correct answer and gives the user
-       * the feedback to the given (or set by 'set_given_asnwer') answer
+       * the feedback to the given (or set by 'set_given_answer') answer
        */
       this.show_correct_answer  = () => {
         this.disabled_submit = true; 
@@ -449,7 +449,7 @@
       }
 
       /**
-       * star starts the instance
+       * start starts the instance
        */
       this.start = async () => {
         //Abort on invalid config
