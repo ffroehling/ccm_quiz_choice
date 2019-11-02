@@ -6,7 +6,7 @@
 
 ccm.files[ 'configs.js' ] = {
   "single": { 
-    "css" : ['ccm.load', './style.css'],
+    "css" : ["ccm.load", "resources/style.css"],
     "type" : "single",
 
     /*
@@ -23,7 +23,7 @@ ccm.files[ 'configs.js' ] = {
     ]
   },
   "multiple" : {
-    "css" : ['ccm.load', './style.css'],
+    "css" : ["ccm.load", "resources/style.css"],
     "type" : "multiple" ,
 
     /*
