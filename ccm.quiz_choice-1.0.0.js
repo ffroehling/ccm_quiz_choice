@@ -16,7 +16,7 @@
     name: 'quiz_choice',
     version: [1,0,0],
     
-    ccm: './ccm/versions/ccm-20.7.2.js',
+    ccm: 'https://ccmjs.github.io/ccm/versions/ccm-20.7.2.js',
     /**
      * default instance configuration
      * @type {object}
