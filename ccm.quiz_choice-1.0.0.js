@@ -110,6 +110,7 @@
       };
 
       /*#####SECTION INTERFACE FOR REALTIME QUIZ COMPONENT##### */
+
       /*
        * In this section, all functions are implement which are required by
        * the realtime quiz component
@@ -142,6 +143,41 @@
         }
       };
       /*#####END SECTION INTERFACE FOR REALTIME QUIZ COMPONENT##### */
+
+      /*#####SECTION INTERFACE FOR LEARNING ANALYTICS COMPONENT##### */
+
+      /*
+       * In this section, all functions are implemented which are required by
+       * LA-Components. Therefore a standard has been developed. See 
+       * https://github.com/ccmjs/ccm/wiki/Analytics-Schnittstelle for details
+       * /
+       */
+
+      /**
+       * getValue returns the data to be analyzed by the defined convention
+       * @returns {Object} result data of the component
+       */
+      this.getValue = () => {
+        if(!this.given_answer){
+          return {};
+        }
+
+        let result = {
+          total : 100, //percentage to reach
+          correct : this.percentage,
+          created_at : new Date().toISOString(),
+          updated_at : new Date().toISOString(),
+        };
+
+        //when nothing's given yet => return defaults
+        if(!this.given_answer){
+          result.total = 0;
+          result.correct = 0;
+        }
+
+        return result;
+      }
+      /*#####END SECTION INTERFACE FOR LEARNING ANALYTICS COMPONENT##### */
 
       /**
        * show_multiple_correct_answer renders correctness of given (or set)
