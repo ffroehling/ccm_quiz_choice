@@ -323,8 +323,7 @@
       };
 
       this.unify_config = async () => {
-        if(this.answers.length == 0){
-          alert('No answers given');
+        if((!this.answers) || this.answers.length == 0){
           return false;
         }
 
@@ -343,7 +342,9 @@
        * starts the instance
        */
       this.start = async () => {
-        if(!this.unify_config()){
+        //Abort on invalid config
+        if(! await this.unify_config()){
+          console.error('Invalid configuration received. App not started');
           return;
         }
 
