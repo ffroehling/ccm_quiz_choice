@@ -1,6 +1,6 @@
 /**
  * @overview ccm component for quiz multiple and single choice question
- * @author Felix Fröhling <felix.froehling@smail.inf.h-brs.de> 2019
+ * @author Felix Fröhling <felix.froehling1@gmail.com> 2019
  * @license The MIT License (MIT)
  * @version latest (1.0.0)
  */
@@ -54,7 +54,8 @@
       let $;
 
       /**
-       * init is called once after all dependencies are solved and is then deleted
+       * init is called once after all dependencies are solved 
+       * and is then deleted
        */
       this.init = async () => {
         // set shortcut to help functions
@@ -62,10 +63,14 @@
         this.traverse_light_dom();
       };
   
+      /**
+       * traverse_light_dom is called on init and searches for defined answers
+       * in the lightdom. These answers are used with higher priority.
+       */
       this.traverse_light_dom = () => {
         /*
          * #################
-         * THE SOURCE CODE IN THIS AREA IS BASED AND ALMOST EQUIVALENT 
+         * THE SOURCE CODE IN THIS FUNCTION IS BASED AND ALMOST EQUIVALENT 
          * TO André Kless' quiz component
          * https://akless.github.io/ccm-components/quiz/ccm.quiz.js
          * #################
@@ -99,22 +104,58 @@
 
 
       /**
-       * is called once after the initialization and is then deleted
+       * ready is called once after the initialization and is then deleted
        */
       this.ready = async () => {
       };
 
+      /*#####SECTION INTERFACE FOR REALTIME QUIZ COMPONENT##### */
+      /*
+       * In this section, all functions are implement which are required by
+       * the realtime quiz component
+       * /
+
+      /**
+       * set_given_answer sets a given answer to the component to get this
+       * answer displayed
+       * @param {Object} answer - defined answer object from the config
+       */
       this.set_given_answer = (answer) => {
         this.given_answer = answer;
       };
 
+      /**
+       * show_correct_answer renders the correct answer and gives the user
+       * the feedback to the given (or set by 'set_given_asnwer') answer
+       */
+      this.show_correct_answer  = () => {
+        this.disabled_submit = true; 
+        this.element.querySelectorAll('button').forEach((button)  => {
+          button.classList.add('disabled');
+        });
+
+        if(this.type == 'single'){
+          this.show_single_correct_answer();
+        }
+        else{
+          this.show_multiple_correct_answer();
+        }
+      };
+      /*#####END SECTION INTERFACE FOR REALTIME QUIZ COMPONENT##### */
+
+      /**
+       * show_multiple_correct_answer renders correctness of given (or set)
+       * answer if type is 'multiple'
+       */
       this.show_multiple_correct_answer = () => {
         this.given_answer.forEach((given_answer) => {
+
           //get correctness
           let correct = given_answer.selected == given_answer.correct;
 
           //get according answer
-          this.element.querySelectorAll('.multiple_wrapper').forEach(wrapper => {
+          this.element.querySelectorAll('.multiple_wrapper')
+          .forEach(wrapper => {
             let content = wrapper.querySelector('label').innerHTML;
             if(content == given_answer.value){
               if(correct){
@@ -129,7 +170,12 @@
         });
       };
 
+      /**
+       * show_single_correct_answer renders correctness of given (or set) 
+       * answer if type is 'single'
+       */
       this.show_single_correct_answer = () => {
+
         //get correct answer
         this.correct_answer = null;
         this.answers.forEach(answer => {
@@ -151,26 +197,24 @@
         });
       };
 
-      this.show_correct_answer  = () => {
-        this.disabled_submit = true; 
-        this.element.querySelectorAll('button').forEach((button)  => {
-          button.classList.add('disabled');
-        });
 
-        if(this.type == 'single'){
-          this.show_single_correct_answer();
-        }
-        else{
-          this.show_multiple_correct_answer();
-        }
-      };
-
+      /**
+       * on_answer_callback raises the callback (which is usually set by the 
+       * parent component) when the user gave an answer and the callback 
+       * is defined. 
+       */
       this.on_answer_callback = () => {
         if(this.answer_callback){
           this.answer_callback(this.percentage, this.given_answer);
         }
       }
 
+      /**
+       * handle_single_answer returns a closure which gets called 
+       * when the user gives an answer and the defined type is 'single'
+       * @param {Object} answer - defined answer object from the config
+       * @returns {Object} closure to handle a single given answer
+       */
       this.handle_single_answer = (answer) => {
         return (event) => {
           event.stopPropagation();
@@ -190,6 +234,10 @@
         };
       }
 
+      /**
+       * handle_multiple_answer gets called when the user gives an answer
+       * and the defined type is 'multiple'
+       */
       this.handle_multiple_answer = () => {
         let percentage = 0;
         let perc_answer = Math.floor(100 / this.answers.length);
@@ -223,10 +271,20 @@
           }
       }
 
+      /**
+       * get_answer_div returns the div for the answeres 
+       * of the defined html structure
+       * @returns {Object} The element in defined html tag which is used for 
+       * rendering the answers
+       */
       this.get_answer_div = () => {
         return this.html.main.inner[this.html.main.inner.length - 1].inner;
       }
 
+      /**
+       * renders_single renders all buttons for the answers 
+       * if the type is 'single'
+       */
       this.render_single = () => {
         this.answers.forEach(answer => {
           let button = {
@@ -241,6 +299,10 @@
         });
       };
 
+      /**
+       * renders_single renders all checkboxes and labes for the answers 
+       * if the type is 'multiple'
+       */
       this.render_multiple = () => {
         this.answers.forEach(answer => {
           answer.selected = false;
@@ -290,6 +352,10 @@
         this.get_answer_div().push(submit);
       },
 
+      /**
+       * set_questions renders the question text and, if given, an according 
+       * image
+       */
       this.set_question = () => {
         if(this.question_text){
           this.html.main.inner[1].inner = this.question_text;
@@ -306,6 +372,9 @@
         }
       }
 
+      /**
+       * show_questions renders the whole html based on the given question type
+       */
       this.show_question = () => {
         //set question
         this.set_question();
@@ -317,20 +386,25 @@
           this.render_multiple();
         }
 
-        //let html = $.html(self.html.main, {question : this.question});
         let html = $.html(self.html.main);
         $.setContent(self.element, html);
       };
 
+      /**
+       * unify_config applies neccessary default settings
+       * @returns {Boolean} false if config is invalid, true otherwise
+       */
       this.unify_config = async () => {
         if((!this.answers) || this.answers.length == 0){
           return false;
         }
 
+        //default question type is 'single'
         if(!(this.type == 'single' || this.type == 'multiple')){
           this.type = 'single';
         }
 
+        //by default show feedback of given answer instantly
         if( typeof this.show_feedback === 'undefined'){
           this.show_feedback = true;
         }
@@ -339,7 +413,7 @@
       }
 
       /**
-       * starts the instance
+       * star starts the instance
        */
       this.start = async () => {
         //Abort on invalid config
@@ -348,6 +422,7 @@
           return;
         }
 
+        //go on by showing the actual question
         this.show_question();
         
       };
