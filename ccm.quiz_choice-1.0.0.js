@@ -184,6 +184,15 @@
        * answer if type is 'multiple'
        */
       this.show_multiple_correct_answer = () => {
+        //When no answer is given, everything is wrong
+        if(!this.given_answer){
+          this.element.querySelectorAll('.multiple_wrapper').forEach(wrapper => {
+              wrapper.classList.add('wrong');
+          });
+
+          return;
+        }
+
         this.given_answer.forEach((given_answer) => {
 
           //get correctness
@@ -211,7 +220,6 @@
        * answer if type is 'single'
        */
       this.show_single_correct_answer = () => {
-
         //get correct answer
         this.correct_answer = null;
         this.answers.forEach(answer => {
@@ -221,8 +229,8 @@
         });
 
         this.element.querySelectorAll('button').forEach((button) => {
-          if(this.given_answer.value == button.innerHTML){
-            if(!this.given_answer.correct){
+          if(!this.given_answer || (this.given_answer.value == button.innerHTML)){
+            if(!this.given_answer || !this.given_answer.correct){
               button.classList.add('wrong');
             }
           }
@@ -241,7 +249,7 @@
        */
       this.on_answer_callback = () => {
         if(this.answer_callback){
-          this.answer_callback(this.percentage, this.given_answer);
+          this.answer_callback(this.percentage || 0, this.given_answer);
         }
       }
 
