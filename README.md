@@ -5,6 +5,13 @@ This is a component, which can execute either a multiple choice question. It is 
 For example configuration see resources/configs.js file
 
 ## Compatibility
-This component is compatible with realtime quiz component. See (TODO: Insert URL HERE).
+This component is compatible with realtime quiz component. 
+
+
+# References
+
+TODO: CCM Reference
+TODO: DMS Reference
+TODO: Quiz-Component Reference
 
 
