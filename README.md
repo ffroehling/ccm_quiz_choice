@@ -15,8 +15,8 @@ This component is published in the Digital Makerspace.
 
 
 # References
-[CCM]: https://github.com/ccmjs/ccm
-[DMS]: https://ccmjs.github.io/digital-maker-space/
+[CCM](https://github.com/ccmjs/ccm)
+[DMS](https://ccmjs.github.io/digital-maker-space/)
 
 TODO: Demo
 TODO: Realtime-Quiz-Component Reference
